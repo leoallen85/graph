@@ -39,7 +39,7 @@ class Node
     return Path.new(total_strategy: total_strategy) if self == destination
     return UNREACHABLE_PATH if visited_nodes.include? self
     @links.map do |link|
-      link._path(destination, visited_nodes.dup << self, total_strategy) << link
+      link._path(destination, visited_nodes.dup << self, total_strategy)
     end.min || UNREACHABLE_PATH
   end
 

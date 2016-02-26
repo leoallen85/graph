@@ -19,6 +19,6 @@ class Link
   end
 
   def _path(destination, visited_nodes, total_strategy)
-    @target._path(destination, visited_nodes, total_strategy)
+    @target._path(destination, visited_nodes, total_strategy) << self
   end
 end

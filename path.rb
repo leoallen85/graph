@@ -3,8 +3,6 @@ class Path
   LENGTH_TOTAL = -> (links) { links.length }
   COST_TOTAL = -> (links) { Link.total_cost(links) }
 
-  include Enumerable
-
   attr_reader :links
   protected :links
 
@@ -21,10 +19,6 @@ class Path
   def <<(link)
     @links.unshift(link) if link
     self
-  end
-
-  def each(&block)
-    @links.each(&block)
   end
 
   def <=>(other)

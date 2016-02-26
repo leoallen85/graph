@@ -6,8 +6,6 @@ require_relative './path'
 # Understands it's neighbors
 class Node
 
-  UNREACHABLE_PATH = UnreachablePath.new
-
   def initialize
     @links = []
   end
@@ -18,29 +16,29 @@ class Node
   end
 
   def reach?(destination)
-    _path(destination, no_visited_nodes, Path::CHEAPEST) != UNREACHABLE_PATH
+    _path(destination, no_visited_nodes, Path::CHEAPEST) != Path::NONE
   end
 
   def hop_count(destination)
-    path_to(destination, Path::SHORTEST).length
+    path_to(destination, Path::SHORTEST).hop_count
   end
 
   def cost(destination)
-    path_to(destination, Path::CHEAPEST).total
+    path_to(destination, Path::CHEAPEST).cost
   end
 
-  def path_to(destination, total_strategy = Path::CHEAPEST)
-    result = _path(destination, no_visited_nodes, total_strategy)
-    raise "Unreachable" if result == UNREACHABLE_PATH
+  def path_to(destination, strategy = Path::CHEAPEST)
+    result = _path(destination, no_visited_nodes, strategy)
+    raise "Unreachable" if result == Path::NONE
     result
   end
 
-  def _path(destination, visited_nodes, total_strategy)
-    return Path.new(total_strategy: total_strategy) if self == destination
-    return UNREACHABLE_PATH if visited_nodes.include? self
+  def _path(destination, visited_nodes, strategy)
+    return Path.new if self == destination
+    return Path::NONE if visited_nodes.include? self
     @links.map do |link|
-      link._path(destination, visited_nodes.dup << self, total_strategy)
-    end.min { |current, other| total_strategy.call(current, other) } || UNREACHABLE_PATH
+      link._path(destination, visited_nodes.dup << self, strategy)
+    end.min(&strategy) || Path::NONE
   end
 
   private

@@ -4,21 +4,17 @@
 class Link
 
   attr_reader :target, :cost
-  protected :target
+  private :target, :cost
 
   def self.total_cost(links)
-    links.map(&:cost).inject(0, :+)
+    links.map { |link| link.send(:cost) }.inject(0, :+)
   end
 
   def initialize(target, cost)
     @target, @cost = target, cost
   end
 
-  def ==(other)
-    self.target == other.target && self.cost == other.cost
-  end
-
   def _path(destination, visited_nodes, total_strategy)
-    @target._path(destination, visited_nodes, total_strategy) << self
+    @target._path(destination, visited_nodes, total_strategy).prepend(self)
   end
 end

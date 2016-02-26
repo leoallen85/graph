@@ -41,19 +41,19 @@ class GraphTest < Minitest::Test
   end
 
   def test_path_to
-
-    assert_equal(Path.new, A.path_to(A))
-    assert_equal(Path.new([Link.new(A, 7)]), B.path_to(A))
-    assert_equal(Path.new([
-      Link.new(D, 1),
-      Link.new(E, 2),
-      Link.new(B, 3),
-      Link.new(F, 8),
-      Link.new(H, 9)
-    ]), C.path_to(H))
+    assert_path(0, 0, A, A)
+    assert_path(1, 7, B, A)
+    assert_path(5, 23, C, H)
     assert_raises(RuntimeError) { A.path_to(B) }
     assert_raises(RuntimeError) { G.path_to(B) }
     assert_raises(RuntimeError) { B.path_to(G) }
   end
 
+  private
+
+  def assert_path(expected_hop_count, expected_cost, source, destination)
+    path = source.path_to(destination)
+    assert_equal(expected_hop_count, path.hop_count)
+    assert_equal(expected_cost, path.cost)
+  end
 end

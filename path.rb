@@ -1,48 +1,48 @@
+# Understands how to get from one node to another node
 class Path
 
-  SHORTEST = -> (current, other) { current.length <=> other.length }
-  CHEAPEST = -> (current, other) { current.total <=> other.total }
+  SHORTEST = -> (champion, challenger) { champion.hop_count <=> challenger.hop_count }
+  CHEAPEST = -> (champion, challenger) { champion.cost <=> challenger.cost }
+  #LONGEST = -> (champion, challenger) { challenger.hop_count <=>
+  #champion.hop_count }
 
   attr_reader :links
   protected :links
 
-  def initialize(links = [], total_strategy: CHEAPEST)
+  def initialize(links = [])
     @links = links
-    @total_strategy = total_strategy
   end
 
-  def ==(other)
-    return false unless other.is_a? Path
-    self.links == other.links
-  end
-
-  def <<(link)
-    @links.unshift(link) if link
+  def prepend(link)
+    @links.unshift(link)
     self
   end
 
-  def length
+  def hop_count
     @links.length
   end
 
-  def total
+  def cost
     Link.total_cost(@links)
   end
+
+  class UnreachablePath
+
+    UNREACHABLE = Float::INFINITY
+
+    def prepend(other)
+      self
+    end
+
+    def cost
+      UNREACHABLE
+    end
+
+    def hop_count
+      UNREACHABLE
+    end
+  end
+
+  NONE = UnreachablePath.new
 end
 
-class UnreachablePath
-
-  UNREACHABLE = Float::INFINITY
-
-  def <<(other)
-    self
-  end
-
-  def total
-    UNREACHABLE
-  end
-
-  def length
-    UNREACHABLE
-  end
-end

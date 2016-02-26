@@ -18,18 +18,18 @@ class Node
   end
 
   def reach?(destination)
-    _path(destination, no_visited_nodes, Path::COST_TOTAL) != UNREACHABLE_PATH
+    _path(destination, no_visited_nodes, Path::CHEAPEST) != UNREACHABLE_PATH
   end
 
   def hop_count(destination)
-    path_to(destination, Path::LENGTH_TOTAL).total
+    path_to(destination, Path::SHORTEST).length
   end
 
   def cost(destination)
-    path_to(destination, Path::COST_TOTAL).total
+    path_to(destination, Path::CHEAPEST).total
   end
 
-  def path_to(destination, total_strategy = Path::COST_TOTAL)
+  def path_to(destination, total_strategy = Path::CHEAPEST)
     result = _path(destination, no_visited_nodes, total_strategy)
     raise "Unreachable" if result == UNREACHABLE_PATH
     result
@@ -40,7 +40,7 @@ class Node
     return UNREACHABLE_PATH if visited_nodes.include? self
     @links.map do |link|
       link._path(destination, visited_nodes.dup << self, total_strategy)
-    end.min || UNREACHABLE_PATH
+    end.min { |current, other| total_strategy.call(current, other) } || UNREACHABLE_PATH
   end
 
   private

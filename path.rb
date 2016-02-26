@@ -1,12 +1,12 @@
 class Path
 
-  LENGTH_TOTAL = -> (links) { links.length }
-  COST_TOTAL = -> (links) { Link.total_cost(links) }
+  SHORTEST = -> (current, other) { current.length <=> other.length }
+  CHEAPEST = -> (current, other) { current.total <=> other.total }
 
   attr_reader :links
   protected :links
 
-  def initialize(links = [], total_strategy: COST_TOTAL)
+  def initialize(links = [], total_strategy: CHEAPEST)
     @links = links
     @total_strategy = total_strategy
   end
@@ -21,12 +21,12 @@ class Path
     self
   end
 
-  def <=>(other)
-    self.total <=> other.total
+  def length
+    @links.length
   end
 
   def total
-    @total_strategy.call(links)
+    Link.total_cost(@links)
   end
 end
 
@@ -34,15 +34,15 @@ class UnreachablePath
 
   UNREACHABLE = Float::INFINITY
 
-  def <=>(other)
-    1
-  end
-
   def <<(other)
     self
   end
 
   def total
+    UNREACHABLE
+  end
+
+  def length
     UNREACHABLE
   end
 end
